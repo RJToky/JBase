@@ -1,0 +1,74 @@
+package model;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import rj.util.GenericDAO;
+
+@Data
+@EqualsAndHashCode(callSuper = false)
+public class Employe extends GenericDAO<Employe> {
+    private int id;
+    private String name;
+    private String email;
+    private String password;
+    private String date;
+
+    public Employe() {
+    }
+
+    public Employe(int id, String name, String email, String password, String date) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.date = date;
+    }
+}
+
+// Table: employe
+create table employe(
+    "id" serial primary key,
+    "name" varchar(255) not null,
+    "email" varchar(255) not null,
+    "password" varchar(255) not null,
+    "date" date not null
+);
+
+// -------------------------------------------------------------------------------------------------------------------------------------
+
+Connection connection = ConnectionPostgres.getConnection();
+
+// Find all
+ArrayList<Employe> employes = new Employe().findAll(connection);
+
+// Find by where
+Employe employe = new Employe();
+employe.where("id", "2");
+ArrayList<Employe> employes = employe.find(connection);
+
+// Find by request
+ArrayList<Employe> employes = new Employe().find(connection, "select * from employe where date < '2005-01-01'");
+
+// Find by id
+Employe employe = new Employe().findById(connection, 1);
+
+// Find last
+Employe employe = new Employe().findLast(connection);
+
+// Save
+Employe employe = new Employe(0, "Toky", "toky@gmail.com", "root", "2004-12-14");
+employe.save(connection);
+
+// Update
+Employe employe = new Employe();
+employe.where("name", "Toky");
+employe.set("name", "Judi");
+employe.update(connection);
+
+// Execute update
+Employe employe = new Employe();
+employe.executeUpdate(connection, "insert into employe values (default, 'Toky', 'toky@gmail.com', 'root', '2004-12-14')");
+employe.executeUpdate(connection, "update employe set name = 'Judi' where name = 'Toky'");
+employe.executeUpdate(connection, "delete from employe where name = 'Judi'");
+
+connection.close();
